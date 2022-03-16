@@ -74,7 +74,7 @@ public class SKMView {
             if(empNo=="") break; //User select to exist in this case
             System.out.print("Please enter your password: ");
             password = IOUtils.readString(10);
-            loginUser = handler.loginCheck(new adminDao(),empNo,password);
+            loginUser = handler.loginCheck(empNo,password);
             loginSuccess = (loginUser==null)?false:true;
             if(loginSuccess){
                 System.out.println(loginUser);
@@ -119,10 +119,13 @@ public class SKMView {
             System.out.println("\t\t 8 Exit SHIKUMEN Management System");
             System.out.print("Enter your choice: ");
             int choice = IOUtils.readInt();
+            System.out.println();
 
             //start the branching cases
             switch(choice){
                 case 1:{
+                    System.out.println("==============SHIKUMEN seats status==============");
+                    handler.seatsDisplay();
                     break;
                 }
                 case 2:{
