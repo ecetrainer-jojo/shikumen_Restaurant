@@ -29,43 +29,58 @@ public class BasicDao<T> {
 
     //the general dml methods
     public int update(String sql, Object... parameters) {
+        ensureConnected();
         int affectedRow = 0;
         try {
             affectedRow =  qr.update(connection, sql, parameters);
         } catch (SQLException e) {
             e.printStackTrace();
         }finally{
+            disconnect();
             return affectedRow;
         }
     }
 
     //return multi-object ->multi-row queries
     public <T>List<T> multiSelect(String sql, Class<T> daoType, Object... parameters){
+        ensureConnected();
         try {
             return qr.query(connection,sql, new BeanListHandler<>(daoType),parameters);
         } catch (SQLException e) {
             throw new RuntimeException("Multi-Select SQL went wrong...");
+        }finally {
+            disconnect();
         }
     }
 
     public <T> T singleSelect(String sql, Class<T> daoType, Object... parameters){
+        ensureConnected();
         try {
             return qr.query(connection,sql, new BeanHandler<>(daoType),parameters);
         } catch (SQLException e) {
             throw new RuntimeException("Single-Select SQL went wrong...");
+        }finally {
+            disconnect();
         }
     }
 
     public Object itemSelect(String sql, Object... parameters){
+        ensureConnected();
         try {
             return qr.query(connection,sql, new ScalarHandler(),parameters);
         } catch (SQLException e) {
             throw new RuntimeException("Item-Select SQL went wrong...");
+        }finally {
+            disconnect();
         }
     }
 
     public void disconnect(){
         DruidUtils.close(null,null,connection);
+    }
+
+    public void ensureConnected(){
+        connection = DruidUtils.getConnection();
     }
 
 }

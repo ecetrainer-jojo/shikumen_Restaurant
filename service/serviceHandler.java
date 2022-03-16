@@ -1,6 +1,7 @@
 package service;
 
 import dao.EmployeeDao;
+import dao.adminDao;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,27 +22,16 @@ public class serviceHandler {
      * @param password a string contains password
      * @return a boolean to reveal if login is successful
      */
-    public boolean loginCheck(EmployeeDao employeeDao, String username, String password){
+    public boolean loginCheck(adminDao admin, String username, String password){
         String selectSql = "Select count(*) From admin where accountno = ? AND password = ?";
-        long res = (long) employeeDao.itemSelect(selectSql,username,password);
+        int res = admin.checkRecord(username,password);
         if(res==1){
-            //grant the current datetime
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String newTimeStamp = LocalDateTime.now().format(formatter);
-            System.out.println(newTimeStamp);
-            String updateSql = "Update admin set lastlogin=? where accountno = ? AND password = ?";
-            int affectRows = employeeDao.update(updateSql,newTimeStamp,username,password);
-
+            int affectRows =  admin.stampTime(username, password);
             //output the login time info
             if(affectRows==0) System.out.println("Login Timestamp updated failed");
             else System.out.println("Login Timestamp updated successfully");
-
-            //close the connection
-            employeeDao.disconnect();
             return true;
         }
-        //close the connection
-        employeeDao.disconnect();
         return false;
     }
 }
