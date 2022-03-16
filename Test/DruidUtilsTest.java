@@ -24,5 +24,6 @@ class DruidUtilsTest {
         System.out.println("connection success");
         DruidUtils.close(null,null,connection);
 
+
     }
 }

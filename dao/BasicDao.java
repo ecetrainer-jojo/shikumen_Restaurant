@@ -18,20 +18,24 @@ import java.util.List;
  */
 //<T> means do not know the type
 public class BasicDao<T> {
-    private static QueryRunner qr;
-    private static Connection connection;
-    static{
-         qr = new QueryRunner();
-         connection = DruidUtils.getConnection();
+    private QueryRunner qr;
+    private Connection connection;
 
+    public BasicDao(){
+        qr = new QueryRunner();
+        connection = DruidUtils.getConnection();
     }
 
+
     //the general dml methods
-    public int update(String sql, Object... parameters){
+    public int update(String sql, Object... parameters) {
+        int affectedRow = 0;
         try {
-            return qr.update(connection,sql);
+            affectedRow =  qr.update(connection, sql, parameters);
         } catch (SQLException e) {
-            throw new RuntimeException("Update SQL went wrong...");
+            e.printStackTrace();
+        }finally{
+            return affectedRow;
         }
     }
 
@@ -41,8 +45,6 @@ public class BasicDao<T> {
             return qr.query(connection,sql, new BeanListHandler<>(daoType),parameters);
         } catch (SQLException e) {
             throw new RuntimeException("Multi-Select SQL went wrong...");
-        }finally{
-            DruidUtils.close(null,null, connection);
         }
     }
 
@@ -51,8 +53,6 @@ public class BasicDao<T> {
             return qr.query(connection,sql, new BeanHandler<>(daoType),parameters);
         } catch (SQLException e) {
             throw new RuntimeException("Single-Select SQL went wrong...");
-        }finally{
-            DruidUtils.close(null,null, connection);
         }
     }
 
@@ -61,9 +61,11 @@ public class BasicDao<T> {
             return qr.query(connection,sql, new ScalarHandler(),parameters);
         } catch (SQLException e) {
             throw new RuntimeException("Item-Select SQL went wrong...");
-        }finally{
-            DruidUtils.close(null,null, connection);
         }
+    }
+
+    public void disconnect(){
+        DruidUtils.close(null,null,connection);
     }
 
 }
