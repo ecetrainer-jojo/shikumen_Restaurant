@@ -2,7 +2,8 @@ package view;
 
 import Utils.IOUtils;
 import dao.adminDao;
-import service.serviceHandler;
+import domain.Admin;
+import service.ServiceHandler;
 import dao.EmployeeDao;
 
 /**
@@ -14,7 +15,7 @@ import dao.EmployeeDao;
 public class SKMView {
 
     //Parameters we need to set up
-    public static serviceHandler handler = new serviceHandler();
+    public static ServiceHandler handler = new ServiceHandler();
 
 
     public static void main(String[] args) {
@@ -63,6 +64,7 @@ public class SKMView {
         String password;
         boolean loginSuccess = false;
         boolean exitControl = false;
+        Admin loginUser = null;
         while(!loginSuccess && !exitControl) {
             System.out.println("==============Welcome to the Employee Login Page==============");
             System.out.println("(TIPS: If you want to exist, please press enter in employee number)");
@@ -72,9 +74,13 @@ public class SKMView {
             if(empNo=="") break; //User select to exist in this case
             System.out.print("Please enter your password: ");
             password = IOUtils.readString(10);
-            loginSuccess = handler.loginCheck(new adminDao(),empNo,password);
+            loginUser = handler.loginCheck(new adminDao(),empNo,password);
+            loginSuccess = (loginUser==null)?false:true;
             if(loginSuccess){
-                System.out.println("==============login succeeded!==============");
+                System.out.println(loginUser);
+                System.out.println();
+                System.out.println("============== login succeeded!==============");
+                System.out.println("\t"+loginUser.getName()+"\t\t\t\tLast login: "+loginUser.getLastlogin());
                 System.out.println();
                 //going to the secondary Menu and collect the feedback
                 exitControl = listMenu();

@@ -5,31 +5,31 @@ package domain;
  * @Date 2022-03-15
  * @Version 1.0
  */
-public class admin {
-    public String employeeNo;
+public class Admin {
+    public Integer empno;
     public String name;
     public String accountNo;
     public String password;
-    public String lastLoginTime;
+    public String lastlogin;
 
-    public void admin(){
+    public Admin(){
 
     }
 
-    public admin(String employeeNo, String name, String accountNo, String password, String lastLoginTime) {
-        this.employeeNo = employeeNo;
+    public Admin(Integer empno, String name, String accountNo, String password, String lastlogin) {
+        this.empno = empno;
         this.name = name;
         this.accountNo = accountNo;
         this.password = password;
-        this.lastLoginTime = lastLoginTime;
+        this.lastlogin = lastlogin;
     }
 
-    public String getEmployeeNo() {
-        return employeeNo;
+    public Integer getEmpno() {
+        return empno;
     }
 
-    public void setEmployeeNo(String employeeNo) {
-        this.employeeNo = employeeNo;
+    public void setEmpno(Integer empno) {
+        this.empno = empno;
     }
 
     public String getName() {
@@ -56,11 +56,22 @@ public class admin {
         this.password = password;
     }
 
-    public String getLastLoginTime() {
-        return lastLoginTime;
+    public String getLastlogin() {
+        return lastlogin;
     }
 
-    public void setLastLoginTime(String lastLoginTime) {
-        this.lastLoginTime = lastLoginTime;
+    public void setLastlogin(String lastlogin) {
+        this.lastlogin = lastlogin;
+    }
+
+    @Override
+    public String toString() {
+        return "Admin{" +
+                "empno=" + empno +
+                ", name='" + name + '\'' +
+                ", accountNo='" + accountNo + '\'' +
+                ", password='" + password + '\'' +
+                ", lastlogin='" + lastlogin + '\'' +
+                '}';
     }
 }

@@ -47,7 +47,7 @@ public class BasicDao<T> {
         try {
             return qr.query(connection,sql, new BeanListHandler<>(daoType),parameters);
         } catch (SQLException e) {
-            throw new RuntimeException("Multi-Select SQL went wrong...");
+            throw new RuntimeException(e.getMessage());
         }finally {
             disconnect();
         }
@@ -58,7 +58,7 @@ public class BasicDao<T> {
         try {
             return qr.query(connection,sql, new BeanHandler<>(daoType),parameters);
         } catch (SQLException e) {
-            throw new RuntimeException("Single-Select SQL went wrong...");
+            throw new RuntimeException(e.getMessage());
         }finally {
             disconnect();
         }
@@ -69,7 +69,7 @@ public class BasicDao<T> {
         try {
             return qr.query(connection,sql, new ScalarHandler(),parameters);
         } catch (SQLException e) {
-            throw new RuntimeException("Item-Select SQL went wrong...");
+            throw new RuntimeException(e.getMessage());
         }finally {
             disconnect();
         }
