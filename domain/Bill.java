@@ -6,25 +6,25 @@ package domain;
  * @Version 1.0
  */
 public class Bill {
-    public Integer dishID;
+    public String dishName;
     public Integer amount;
     public double price;
 
     public Bill() {
     }
 
-    public Bill(Integer dishID, Integer amount, double price) {
-        this.dishID = dishID;
+    public Bill(String dishName, Integer amount, double price) {
+        this.dishName = dishName;
         this.amount = amount;
         this.price = price;
     }
 
-    public Integer getDishID() {
-        return dishID;
+    public String getDishName() {
+        return dishName;
     }
 
-    public void setDishID(Integer dishID) {
-        this.dishID = dishID;
+    public void setDishName(String dishName) {
+        this.dishName = dishName;
     }
 
     public Integer getAmount() {
@@ -41,5 +41,13 @@ public class Bill {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return  (String.format("%-20s", amount) +
+                "\t\t"+String.format("%-30s", dishName)+
+                "\t\t"+String.format("%-20s", price)
+        );
     }
 }

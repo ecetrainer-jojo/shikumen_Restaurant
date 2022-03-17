@@ -3,6 +3,7 @@ package service;
 import Utils.IOUtils;
 import dao.*;
 import domain.Admin;
+import domain.Bill;
 import domain.Dishes;
 import domain.Seat;
 
@@ -194,7 +195,7 @@ public class ServiceHandler {
         System.out.println(String.format("%-10s", "DishID") +
                 String.format("%-40s", "Name")+
                 String.format("%-15s", "Type")+
-                "Price"+
+                "Unit Price"+
                 "\t\t"+"Mandarin_Name");
         System.out.println("-----------------------------------------------------------------------------------------");
 
@@ -319,6 +320,42 @@ public class ServiceHandler {
     public double searchDishPrice(int dishID){
         DishesDao dishesDao = new DishesDao();
         return dishesDao.searchPrice(dishID);
+    }
+
+    /**
+     * Function: display the for the nominated ID
+     * @return boolean represents whether a boolean exists
+     */
+
+    public void billDisplay(int seatID){
+        //initialize the BillDao
+        BillDao billDao = new BillDao();
+        List<Bill> bills = billDao.searchBill(seatID);
+        if(bills.size()==0){
+            IOUtils.printFormattedInfo("No bills associated with SeatID: "+seatID);
+            return;
+        }
+        double billPrice = 0;
+        String splitLine = "-----------------------------------------------------------------------------------------";
+        System.out.println(String.format("%-20s", "Amount") +
+                "\t\t"+String.format("%-30s", "Dish Name")+
+                "\t\t"+String.format("%-20s", "Price"));
+
+        System.out.println(splitLine);
+        for(Bill bill:bills){
+            billPrice += bill.price;
+            System.out.println(bill);
+        }
+        double tips = billPrice*0.2;
+        double hst = (billPrice+tips)*0.13;
+        System.out.println(splitLine);
+        System.out.println();
+        System.out.println(String.format("%-50s"," ")+ String.format("%-15s","TIPS:")  + String.format("%.2f",tips));
+        System.out.println(String.format("%-50s", " ") + String.format("%-15s","HST:") + String.format("%.2f",hst));
+        System.out.println(splitLine);
+        System.out.println(String.format("%-50s", " ")+ String.format("%-15s","TOTAL:") +String.format("%.2f",billPrice+tips+hst));
+        System.out.println();
+        System.out.println();
     }
 
 

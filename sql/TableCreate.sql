@@ -58,6 +58,8 @@ dishName VARCHAR(64) NOT NULL DEFAULT(""),
 dishType VARCHAR(32) NOT NULL DEFAULT(""),
 price double NOT NULL DEFAULT(0.0));
 
+AlTER Table dishes ADD Mandarin_Name VARCHAR(32); 
+
 INSERT INTO dishes Values(null,"Shaoxing Cold Chicken (绍兴白斩鸡)","Cold Dishes",24.99);
 INSERT INTO dishes Values(null,"Shanghai Fried Fish (本帮熏鱼)","Cold Dishes",15.99);
 INSERT INTO dishes Values(null,"Sweet and Sour Spare Rib (糖醋小排)","Cold Dishes",16.99);

@@ -195,6 +195,11 @@ public class SKMView {
                     break;
                 }
                 case 5:{
+                    IOUtils.printFormattedTitle("Display the Bill");
+                    int seatID = handler.seatSelection();
+                    if(seatID==-1) break;
+                    System.out.println();
+                    handler.billDisplay(seatID);
                     break;
                 }
                 case 6:{
