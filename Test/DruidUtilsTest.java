@@ -3,6 +3,7 @@ package Test;
 import Utils.DruidUtils;
 
 import java.sql.Connection;
+import java.util.Formatter;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -170,4 +170,42 @@ public class IOUtils {
 
         return line;
     }
+
+    /**
+     * Function: Input a string, information with a certain format
+     * @param info the String contains info
+     */
+
+    public static void printFormattedInfo(String info){
+        //The length of the title could not be longer than 30
+        String s1 = "";
+        String s2 = "";
+        int spaceSize = (40-info.length())/2;
+        for(int i=0; i<20;i++){
+            s1+='-';
+            if(i<spaceSize){
+                s2+=' ';
+            }
+        }
+        System.out.println(s1+s2+info+s2+s1);
+    }
+
+    /**
+     * Function: Input a string, information with a certain format
+     * @param title the String contains info
+     */
+
+    public static void printFormattedTitle(String title){
+        //The length of the title could not be longer than 30
+        String s1 = "";
+        String s2 = "";
+        int spaceSize = (40-title.length())/2;
+        for(int i=0; i<20;i++){
+            s1+='=';
+            if(i<spaceSize){
+                s2+=' ';
+            }
+        }
+        System.out.println(s1+s2+title+s2+s1);
+    }
 }

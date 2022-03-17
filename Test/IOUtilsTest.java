@@ -17,6 +17,8 @@ class IOUtilsTest {
         IOUtils.readMenuSelection();
     }
 
-
+    public static void main(String[] args) {
+        IOUtils.printFormattedInfo("gsgduwedwedade");
+    }
 
 }
