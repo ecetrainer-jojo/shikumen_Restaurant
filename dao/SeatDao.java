@@ -37,4 +37,16 @@ public class SeatDao extends BasicDao<Seat>{
         return nameUpdate + statusUpdate;
     }
 
+    //function to update the status of the Seat in database
+    public int cancelSeat(int seatID){
+        String statusSql = "Update seat SET status = 'Empty' where seatID=?";
+        String nameSql = "Update seat SET customerName = '' where seatID=?";
+        int statusUpdate = update(statusSql,seatID);
+        int nameUpdate = update(nameSql,seatID);
+        //return the rows affected through the update
+        return nameUpdate + statusUpdate;
+    }
+
+
+
 }

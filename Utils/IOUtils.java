@@ -181,7 +181,7 @@ public class IOUtils {
         String s1 = "";
         String s2 = "";
         int spaceSize = (40-info.length())/2;
-        for(int i=0; i<20;i++){
+        for(int i=0; i<25;i++){
             s1+='-';
             if(i<spaceSize){
                 s2+=' ';
@@ -200,7 +200,7 @@ public class IOUtils {
         String s1 = "";
         String s2 = "";
         int spaceSize = (40-title.length())/2;
-        for(int i=0; i<20;i++){
+        for(int i=0; i<25;i++){
             s1+='=';
             if(i<spaceSize){
                 s2+=' ';

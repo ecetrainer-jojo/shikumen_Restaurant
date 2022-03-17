@@ -130,7 +130,7 @@ public class SKMView {
                     break;
                 }
                 case 2:{
-                    //initialize two boolean to control the loop
+                    //initialize boolean to control the loop
                     boolean reSelect = true;
                     while(reSelect) {
                         IOUtils.printFormattedTitle("SHIKUMEN seats booking");
@@ -147,8 +147,8 @@ public class SKMView {
                             System.out.println("Are you sure you want to make the booking?");
                             char readConfirm = IOUtils.readConfirmSelection();
                             if(readConfirm=='N') break;
-
-                            handler.bookSeat(seatNum,customerName);
+                            //if the update has errors also break
+                            if(!handler.bookSeat(seatNum,customerName)) break;
                             reSelect = false;
                             IOUtils.printFormattedInfo("Booking succeeded!");
                         }
@@ -162,6 +162,8 @@ public class SKMView {
                     break;
                 }
                 case 3:{
+                    IOUtils.printFormattedTitle("SHIKUMEN Food Menu");
+                    handler.dishesDisplay();
                     break;
                 }
                 case 4:{
@@ -171,6 +173,29 @@ public class SKMView {
                     break;
                 }
                 case 6:{
+                    boolean reSelect = true;
+                    while(reSelect) {
+                        IOUtils.printFormattedTitle("SHIKUMEN seats cancelling");
+                        System.out.print("Please enter the seat you want to cancel booking (-1 to exit): ");
+                        int seatNum = handler.seatSelection();
+                        System.out.println();
+                        if (seatNum == -1) break;
+                        else if (handler.checkSeatBooked(seatNum)) {
+                            //let the user confirm the cancellation
+                            System.out.println("Are you sure you want to cancel the booking?");
+                            char readConfirm = IOUtils.readConfirmSelection();
+                            if (readConfirm == 'N') break;
+                            //handler will cancel the book
+                            if(!handler.cancelSeat(seatNum)) break;
+                            reSelect=false;
+                            IOUtils.printFormattedInfo("Cancelling succeeded!");
+                        }
+                        else {
+                            System.out.println("Sorry this table has not been booked yet");
+                            IOUtils.printFormattedInfo("Cancelling failed!");
+                        }
+                        System.out.println();
+                    }
                     break;
 
                 }

@@ -1,10 +1,12 @@
 package service;
 
 import Utils.IOUtils;
+import dao.DishesDao;
 import dao.EmployeeDao;
 import dao.SeatDao;
 import dao.adminDao;
 import domain.Admin;
+import domain.Dishes;
 import domain.Seat;
 
 import java.time.LocalDateTime;
@@ -43,8 +45,7 @@ public class ServiceHandler {
     }
 
     /**
-     * Function: link to the database to see the availability to login
-     *            and also write the timestamp into the database
+     * Function: print out the seats and their status
      */
     public void seatsDisplay(){
         //create a seatDao
@@ -109,13 +110,54 @@ public class ServiceHandler {
      * @return boolean represents whether the set is available
      */
 
-    public void bookSeat(int seatID, String customerName){
+    public boolean bookSeat(int seatID, String customerName){
         //create the SeatDao
         SeatDao seatDao = new SeatDao();
         if(seatDao.bookSeat(seatID,customerName)==2){
             System.out.println("Your booking is confirmed!");
+            return true;
         }
-        return;
+        System.out.println("Some errors occur in the booking process, please try again later");
+        return false;
+    }
+
+    /**
+     * Function: update the database through the booking cancellation
+     * @param seatID the number of the seat ready to check
+     * @return boolean represents whether the set is available
+     */
+
+    public boolean cancelSeat(int seatID){
+        //create the SeatDao
+        SeatDao seatDao = new SeatDao();
+        if(seatDao.cancelSeat(seatID)==2){
+            System.out.println("Your cancellation is confirmed!");
+            return true;
+        }
+        System.out.println("Some errors occur in the cancelling process, please try again later");
+        return false;
+    }
+
+    /**
+     * Function: print the food lists and their type & price
+     */
+    public void dishesDisplay(){
+        //create a seatDao
+        DishesDao dishesDao = new DishesDao();
+        List<Dishes> dishes = dishesDao.displaySeats();
+        System.out.println(String.format("%-10s", "DishID") +
+                String.format("%-40s", "Name")+
+                String.format("%-15s", "Type")+
+                "Price"+
+                "\t\t"+"Mandarin_Name");
+        System.out.println("-----------------------------------------------------------------------------------------");
+
+        //print out the dish status
+        for(Dishes dish:dishes){
+            System.out.println(dish);
+        }
+
+        System.out.println();
     }
 
 
