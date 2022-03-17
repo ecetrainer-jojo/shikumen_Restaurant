@@ -18,4 +18,10 @@ public class DishesDao extends BasicDao<Dishes>{
         List<Dishes> dishes = multiSelect(selectSql,Dishes.class);
         return dishes;
     }
+
+    //function to look up the price of the dish through the dishID
+    public double searchPrice(int dishID){
+        String selectSql = "Select price From dishes where dishID=?";
+        return (double)itemSelect(selectSql,dishID);
+    }
 }

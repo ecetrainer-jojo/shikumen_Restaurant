@@ -122,7 +122,7 @@ public class IOUtils {
      * @return Y or N
      */
     public static char readConfirmSelection() {
-        System.out.println("Please Input your choice(Y/N)");
+        System.out.print("Please Input your choice(Y/N): ");
         char c;
         while (true) {
             String str = readKeyBoard(1, false).toUpperCase();

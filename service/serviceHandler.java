@@ -1,10 +1,7 @@
 package service;
 
 import Utils.IOUtils;
-import dao.DishesDao;
-import dao.EmployeeDao;
-import dao.SeatDao;
-import dao.adminDao;
+import dao.*;
 import domain.Admin;
 import domain.Dishes;
 import domain.Seat;
@@ -53,8 +50,8 @@ public class ServiceHandler {
         List<Seat> seats = seatDao.displaySeats();
         System.out.println(String.format("%-10s", "SeatID") +
                         "\t\t"+String.format("%-10s", "Status")+
-                        "\t\t"+String.format("%-15s", "Dining Time")+
-                "\t\t"+String.format("%-15s", "Servant")+
+                        "\t\t"+String.format("%-20s", "Dining Time")+
+                "\t\t"+String.format("%-10s", "Servant")+
                 "\t\t"+String.format("%-10s", "Customer Name"));
         System.out.println("---------------------------------------------------------------------------------------");
 
@@ -70,10 +67,11 @@ public class ServiceHandler {
      */
     public int seatSelection(){
         int tableNum = 0;
+        System.out.print("Please enter the seatID you want to select (-1 to exit): ");
         tableNum = IOUtils.readInt();
         //The seat number is between 1 and 7
         while((tableNum<1 || tableNum>7) && (tableNum!=-1)){
-            System.out.print("Please enter a valid seatID (1-7) or -1 to exit: ");
+            System.out.print("Please re-enter a valid seatID (1-7) or -1 to exit: ");
             tableNum = IOUtils.readInt();
         }
         return tableNum;
@@ -100,7 +98,11 @@ public class ServiceHandler {
         //create the SeatDao
         SeatDao seatDao = new SeatDao();
         Seat targetSeat = seatDao.checkSeat(seatID);
-        return (targetSeat.getStatus().equals("Booked"))?true:false;
+        String status = targetSeat.getStatus();
+        if(status.equals("Booked")||status.equals("Dining")){
+            return true;
+        }
+        else return false;
     }
 
     /**
@@ -122,6 +124,27 @@ public class ServiceHandler {
     }
 
     /**
+     * Function: update the database through the ordering
+     * @param seatID the number of the seat ready to order
+     * @param operatorName the name of the operator (who logs in the system)
+     * @return boolean represents whether the order could be made
+     */
+
+    public boolean orderSeat(int seatID, String operatorName){
+        //create the SeatDao
+        SeatDao seatDao = new SeatDao();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String diningTime = LocalDateTime.now().format(formatter);
+        //invoke the order seat function from seatDao
+        if(seatDao.orderSeat(seatID,diningTime,operatorName)==3){
+            System.out.println("Your dining status is confirmed! Now you can start order!");
+            return true;
+        }
+        System.out.println("Some errors occur in the confirming process, please try again later");
+        return false;
+    }
+
+    /**
      * Function: update the database through the booking cancellation
      * @param seatID the number of the seat ready to check
      * @return boolean represents whether the set is available
@@ -136,6 +159,29 @@ public class ServiceHandler {
         }
         System.out.println("Some errors occur in the cancelling process, please try again later");
         return false;
+    }
+
+
+    /**
+     * Function: prompt to do the last step for order authentication
+     * @param seatID the number of the seat ready to order
+     * @return boolean shows whether the customer name matches
+     */
+    public boolean confirmCustomerName(int seatID){
+        SeatDao seatDao = new SeatDao();
+        String customerName = seatDao.searchCustomerName(seatID);
+        System.out.println();
+        System.out.print("Please enter the customer name for order confirmation (Press Enter to quit): ");
+        String nameEnter = IOUtils.readString(32,"");
+        while(!nameEnter.equals(customerName)){
+            if(nameEnter.equals("")) return false;
+            else{
+                System.out.println("The name entered does not match the booking record, please try again!");
+                System.out.print("Please enter the customer name for order confirmation (Press Enter to quit): ");
+                nameEnter = IOUtils.readString(32,"");
+            }
+        }
+        return true;
     }
 
     /**
@@ -159,6 +205,123 @@ public class ServiceHandler {
 
         System.out.println();
     }
+
+    /**
+     * Function: During the dishes ordering stage handler the interaction with BillDao
+     *          Also allow the rolling back to the beginning
+     * @param seatID the seat number for ordering the dishes
+     */
+
+    public void orderDishes(int seatID){
+        //create a new bill dao
+        BillDao billDao = new BillDao();
+        //allow the transaction for this connection
+        billDao.allowTransaction();
+        //turn of the auto disconnect function since the transaction status should be maintained
+        billDao.setAutoDisconnect(false);
+        while(true){
+            //Give the user option to quit on all the dishes they have ordered this time
+            System.out.println();
+            dishesDisplay();
+            System.out.println();
+            System.out.println("Tips: You can always press 0 when choosing dishID/amount to revert all the orders");
+            //obtain the dishID
+            System.out.print("Please enter the dishID you want to order (-1 to exit): ");
+            int dishID = IOUtils.readInt();
+            //handle some exceptions
+            while(dishID<1 || dishID>21) {
+                if(dishID==-1){
+                    commitDishes(billDao);
+                    return;
+                }
+                if(dishID==0){
+                    revertDishes(billDao);
+                    return;
+                }
+                System.out.print("Please enter a valid dishID (-1 to exit): ");
+                dishID = IOUtils.readInt();
+            }
+            System.out.println();
+            //obtain the dishAmount
+            System.out.print("Please enter the amount you want to order (-1 to exit): ");
+            int dishAmount = IOUtils.readInt();
+            //Handle some exception
+            while(dishAmount<1) {
+                if(dishAmount==-1){
+                    commitDishes(billDao);
+                    return;
+                }
+                if(dishAmount==0){
+                    revertDishes(billDao);
+                    return;
+                }
+                System.out.print("Please enter a amount (-1 to exit): ");
+                dishAmount = IOUtils.readInt();
+            }
+            //ask for the confirmation to make the order
+            System.out.println("Please confirm to make this order");
+            if(IOUtils.readConfirmSelection()=='N'){
+                System.out.println("Please reconsider and make the order later");
+                //let the user start over again
+                break;
+            }
+            //get the price of the id
+            double dishPrice = searchDishPrice(dishID);
+            double totalPrice = dishPrice * dishAmount;
+            //start the billDao handling
+            if (billDao.makeOrder(seatID,dishID,dishAmount,totalPrice)==1){
+                IOUtils.printFormattedInfo("Your order has been recorded!");
+            }
+            else{
+                System.out.println("Something went wrong during the process, please again");
+            }
+            System.out.println();
+            //ask if user want to make another order
+            System.out.println("Do you want to make another order?");
+            if(IOUtils.readConfirmSelection()=='N'){
+                commitDishes(billDao);
+                return;
+            }
+            //if not it will just keep on running
+        }
+    }
+
+    /**
+     * Function: helper function when user want to revert the orders
+     * @param billDao the billDao object that has been used in the orderDishes process
+     */
+
+    public void revertDishes(BillDao billDao){
+        IOUtils.printFormattedInfo("You choose to revert all the previous orders");
+        System.out.println();
+        billDao.rollback();
+        billDao.disconnect();
+    }
+
+    /**
+     * Function: helper function when user want to commit and quit the ordering process
+     * @param billDao the billDao object that has been used in the orderDishes process
+     */
+
+    public void commitDishes(BillDao billDao){
+        IOUtils.printFormattedInfo("Thank you ordering!");
+        IOUtils.printFormattedInfo("Your orders are submitted");
+        System.out.println();
+        billDao.commit();
+        billDao.disconnect();
+    }
+
+    /**
+     * Function: search the price of certain dish
+     * @return a double represent the price of certain dish
+     */
+
+    public double searchDishPrice(int dishID){
+        DishesDao dishesDao = new DishesDao();
+        return dishesDao.searchPrice(dishID);
+    }
+
+
 
 
 }

@@ -75,8 +75,8 @@ public class Seat {
         if(customerName.equals("")) customerName = "Not registered ";
         return  (String.format("%-10s", seatID) +
                 "\t\t"+String.format("%-10s", status)+
-                "\t\t"+String.format("%-15s", diningTime)+
-                "\t\t"+String.format("%-15s", servant)+
+                "\t\t"+String.format("%-20s", diningTime)+
+                "\t\t"+String.format("%-10s", servant)+
                 "\t\t"+String.format("%-10s", customerName)
         );
     }

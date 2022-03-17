@@ -27,7 +27,7 @@ public class SeatDao extends BasicDao<Seat>{
         return seat;
     }
 
-    //function to update the status of the Seat in database
+    //function to update the status of seat when make a booking
     public int bookSeat(int seatID,String customerName){
         String nameSql = "Update seat SET customerName=? where seatID=?";
         int nameUpdate = update(nameSql,customerName,seatID);
@@ -37,7 +37,20 @@ public class SeatDao extends BasicDao<Seat>{
         return nameUpdate + statusUpdate;
     }
 
-    //function to update the status of the Seat in database
+    //function to update the status of the Seat when making an order
+
+    public int orderSeat(int seatID, String diningTime, String operatorName){
+        String statusSql = "Update seat SET status='Dining' where seatID=?";
+        int statusUpdate = update(statusSql,seatID);
+        String servantSql = "Update seat SET servant = ? where seatID=?";
+        int servantUpdate = update(servantSql,operatorName,seatID);
+        String timeSql = "Update seat SET diningTime = ? where seatID=?";
+        int timeUpdate = update(timeSql,diningTime,seatID);
+        //return the rows affected through the update
+        return servantUpdate + statusUpdate + timeUpdate;
+    }
+
+    //function to update the status of the Seat when making a cancellation
     public int cancelSeat(int seatID){
         String statusSql = "Update seat SET status = 'Empty' where seatID=?";
         String nameSql = "Update seat SET customerName = '' where seatID=?";
@@ -45,6 +58,12 @@ public class SeatDao extends BasicDao<Seat>{
         int nameUpdate = update(nameSql,seatID);
         //return the rows affected through the update
         return nameUpdate + statusUpdate;
+    }
+
+    //function to get the customer name from seat
+    public String searchCustomerName(int seatID){
+        String nameSql = "Select customerName From seat where seatID=?";
+        return (String)itemSelect(nameSql,seatID);
     }
 
 

@@ -20,6 +20,11 @@ import java.util.List;
 public class BasicDao<T> {
     private QueryRunner qr;
     private Connection connection;
+    private boolean autoDisconnect = true;
+
+    public void setAutoDisconnect(boolean autoDisconnect) {
+        this.autoDisconnect = autoDisconnect;
+    }
 
     public BasicDao(){
         qr = new QueryRunner();
@@ -36,7 +41,7 @@ public class BasicDao<T> {
         } catch (SQLException e) {
             e.printStackTrace();
         }finally{
-            disconnect();
+            if(autoDisconnect) disconnect();
             return affectedRow;
         }
     }
@@ -49,7 +54,7 @@ public class BasicDao<T> {
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage());
         }finally {
-            disconnect();
+            if(autoDisconnect) disconnect();
         }
     }
 
@@ -60,7 +65,7 @@ public class BasicDao<T> {
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage());
         }finally {
-            disconnect();
+            if(autoDisconnect) disconnect();
         }
     }
 
@@ -71,7 +76,7 @@ public class BasicDao<T> {
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage());
         }finally {
-            disconnect();
+            if(autoDisconnect) disconnect();
         }
     }
 
@@ -80,7 +85,40 @@ public class BasicDao<T> {
     }
 
     public void ensureConnected(){
-        connection = DruidUtils.getConnection();
+        try {
+            if(connection.isClosed()){
+                connection = DruidUtils.getConnection();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //allow the transaction (commit rollback during the process)
+    public void allowTransaction(){
+        try {
+            connection.setAutoCommit(false);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //allow the transaction to be committed
+    public void commit(){
+        try {
+            connection.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //allow the transaction to rollback
+    public void rollback(){
+        try {
+            connection.rollback();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

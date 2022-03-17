@@ -16,6 +16,7 @@ public class SKMView {
 
     //Parameters we need to set up
     public static ServiceHandler handler = new ServiceHandler();
+    public static String operator;
 
 
     public static void main(String[] args) {
@@ -80,7 +81,8 @@ public class SKMView {
                 System.out.println(loginUser);
                 System.out.println();
                 IOUtils.printFormattedInfo("login succeeded!");
-                System.out.println("\t"+loginUser.getName()+"\t\t\t\tLast login: "+loginUser.getLastlogin());
+                operator = loginUser.getName();
+                System.out.println("\t"+operator+"\t\t\t\tLast login: "+loginUser.getLastlogin());
                 System.out.println();
                 //going to the secondary Menu and collect the feedback
                 exitControl = listMenu();
@@ -134,7 +136,6 @@ public class SKMView {
                     boolean reSelect = true;
                     while(reSelect) {
                         IOUtils.printFormattedTitle("SHIKUMEN seats booking");
-                        System.out.print("Please enter the seat you want to book (-1 to exit): ");
                         int seatNum = handler.seatSelection();
                         System.out.println();
                         //if select -1 then exit
@@ -167,6 +168,30 @@ public class SKMView {
                     break;
                 }
                 case 4:{
+                    //initialize boolean to control the loop
+                    boolean reSelect = true;
+                    while(reSelect) {
+                        IOUtils.printFormattedTitle("SHIKUMEN Ordering Page");
+                        System.out.println();
+                        int seatNum = handler.seatSelection();
+                        if (seatNum == -1) {
+                            reSelect = false;
+                            IOUtils.printFormattedInfo("Ordering Cancelled");
+                        }
+                        else if (!handler.checkSeatBooked(seatNum)) {
+                            System.out.println("Sorry the seat has not been booked, only booked seats can be ready to order");
+                            System.out.println();
+                        }
+                        else{
+                            if(!handler.confirmCustomerName(seatNum)) break;
+                            //officially update the seat status
+                            handler.orderSeat(seatNum,operator);
+                            handler.orderDishes(seatNum);
+                            //after ordering designed to set it to be the end of the module
+                            reSelect = false;
+                        }
+                    }
+                    System.out.println();
                     break;
                 }
                 case 5:{
