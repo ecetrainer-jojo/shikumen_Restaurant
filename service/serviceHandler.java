@@ -1,5 +1,6 @@
 package service;
 
+import Utils.IOUtils;
 import dao.EmployeeDao;
 import dao.SeatDao;
 import dao.adminDao;
@@ -49,17 +50,72 @@ public class ServiceHandler {
         //create a seatDao
         SeatDao seatDao = new SeatDao();
         List<Seat> seats = seatDao.displaySeats();
-        System.out.println("\t"+"SeatID" +
-                        "\t\t"+"Status" +
-                        "\t\t"+"Dining Time"+
-                "\t\t\t"+"Servant");
-        System.out.println("--------------------------------------------------------------");
+        System.out.println(String.format("%-10s", "SeatID") +
+                        "\t\t"+String.format("%-10s", "Status")+
+                        "\t\t"+String.format("%-15s", "Dining Time")+
+                "\t\t"+String.format("%-15s", "Servant")+
+                "\t\t"+String.format("%-10s", "Customer Name"));
+        System.out.println("---------------------------------------------------------------------------------------");
 
         //print out the seat status
         for(Seat seat:seats){
             System.out.println(seat);
         }
         System.out.println();
+    }
+
+    /**
+     * Function: Prompt to accept user's input
+     */
+    public int seatSelection(){
+        int tableNum = 0;
+        tableNum = IOUtils.readInt();
+        //The seat number is between 1 and 7
+        while((tableNum<1 || tableNum>7) && (tableNum!=-1)){
+            System.out.print("Please enter a valid seatID (1-7) or -1 to exit: ");
+            tableNum = IOUtils.readInt();
+        }
+        return tableNum;
+    }
+
+    /**
+     * Function: check if the seat has been occupied
+     * @param seatID the number of the seat ready to check
+     * @return boolean represents whether the set is available
+     */
+    public boolean checkSeatAvailable(int seatID){
+        //create the SeatDao
+        SeatDao seatDao = new SeatDao();
+        Seat targetSeat = seatDao.checkSeat(seatID);
+        return (targetSeat.getStatus().equals("Empty"))?true:false;
+    }
+
+    /**
+     * Function: check if the seat has been booked
+     * @param seatID the number of the seat ready to check
+     * @return boolean represents whether the set is available
+     */
+    public boolean checkSeatBooked(int seatID){
+        //create the SeatDao
+        SeatDao seatDao = new SeatDao();
+        Seat targetSeat = seatDao.checkSeat(seatID);
+        return (targetSeat.getStatus().equals("Booked"))?true:false;
+    }
+
+    /**
+     * Function: update the database through the booking
+     * @param seatID the number of the seat ready to check
+     * @param customerName the name of the customer
+     * @return boolean represents whether the set is available
+     */
+
+    public void bookSeat(int seatID, String customerName){
+        //create the SeatDao
+        SeatDao seatDao = new SeatDao();
+        if(seatDao.bookSeat(seatID,customerName)==2){
+            System.out.println("Your booking is confirmed!");
+        }
+        return;
     }
 
 

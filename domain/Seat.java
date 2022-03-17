@@ -15,14 +15,16 @@ public class Seat {
     private String status;
     private String diningTime;
     private String servant;
+    private String customerName;
     //default constructor
     public Seat(){}
 
-    public Seat(Integer seatID, String status, String diningTime, String servant) {
+    public Seat(Integer seatID, String status, String diningTime, String servant, String customerName) {
         this.seatID = seatID;
         this.status = status;
         this.diningTime = diningTime;
         this.servant = servant;
+        this.customerName = customerName;
     }
 
 
@@ -54,6 +56,14 @@ public class Seat {
         return servant;
     }
 
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
     public void setServant(String servant) {
         this.servant = servant;
     }
@@ -62,9 +72,12 @@ public class Seat {
     public String toString() {
         if(diningTime==null) diningTime = "Not Occupied ";
         if(servant.equals("")) servant = "Not Served ";
-        return  "\t\t"+seatID +
-                "\t\t" + status +
-                "\t\t" + diningTime +
-                "\t\t" + servant;
+        if(customerName.equals("")) customerName = "Not registered ";
+        return  (String.format("%-10s", seatID) +
+                "\t\t"+String.format("%-10s", status)+
+                "\t\t"+String.format("%-15s", diningTime)+
+                "\t\t"+String.format("%-15s", servant)+
+                "\t\t"+String.format("%-10s", customerName)
+        );
     }
 }

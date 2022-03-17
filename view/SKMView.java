@@ -108,15 +108,16 @@ public class SKMView {
         boolean logoutControl = false;
         boolean exitControl = false;
         while(!logoutControl && !exitControl){
-            System.out.println("==============Welcome to SHIKUMEN operation list==============");
-            System.out.println("\t\t 1 Monitor Table Status");
-            System.out.println("\t\t 2 Book a meal");
-            System.out.println("\t\t 3 Show all the dishes");
-            System.out.println("\t\t 4 Take order");
-            System.out.println("\t\t 5 Display the bill");
-            System.out.println("\t\t 6 Checkout a table");
-            System.out.println("\t\t 7 Logout");
-            System.out.println("\t\t 8 Exit SHIKUMEN Management System");
+            System.out.println("=========================Welcome to SHIKUMEN operation list=========================");
+            System.out.println("\t\t\t\t 1  Monitor Table Status");
+            System.out.println("\t\t\t\t 2  Book a meal");
+            System.out.println("\t\t\t\t 3  Show all the dishes");
+            System.out.println("\t\t\t\t 4  Take order");
+            System.out.println("\t\t\t\t 5  Display the bill");
+            System.out.println("\t\t\t\t 6  Cancel a booking");
+            System.out.println("\t\t\t\t 7  Checkout a table");
+            System.out.println("\t\t\t\t 8  Logout");
+            System.out.println("\t\t\t\t 9  Exit SHIKUMEN Management System");
             System.out.print("Enter your choice: ");
             int choice = IOUtils.readInt();
             System.out.println();
@@ -124,11 +125,30 @@ public class SKMView {
             //start the branching cases
             switch(choice){
                 case 1:{
-                    System.out.println("==============SHIKUMEN seats status==============");
+                    System.out.println("================================SHIKUMEN seats status================================");
                     handler.seatsDisplay();
                     break;
                 }
                 case 2:{
+                    System.out.println("===============================SHIKUMEN seats booking===============================");
+                    //initialize two boolean to control the loop
+                    boolean reSelect = true;
+                    while(reSelect) {
+                        System.out.print("Please enter the seat you want to book (-1 to exit): ");
+                        int seatNum = handler.seatSelection();
+                        //if select -1 then exit
+                        if (seatNum == -1) reSelect = false;
+                        else if(handler.checkSeatAvailable(seatNum)){
+                            System.out.println("Please enter your name for booking: ");
+                            String customerName = IOUtils.readString(10);
+                            handler.bookSeat(seatNum,customerName);
+                            reSelect = false;
+                        }
+                        else{
+                            System.out.println("Sorry the seat is either booked or current in use!");
+                        }
+                    }
+
                     break;
                 }
                 case 3:{
@@ -145,10 +165,14 @@ public class SKMView {
 
                 }
                 case 7:{
+                    break;
+
+                }
+                case 8:{
                     logoutControl = true;
                     break;
                 }
-                case 8:{
+                case 9:{
                     exitControl = true;
                     break;
                 }
