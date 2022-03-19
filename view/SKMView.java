@@ -117,7 +117,7 @@ public class SKMView {
             System.out.println("\t\t\t\t 4  Take order");
             System.out.println("\t\t\t\t 5  Display the bill");
             System.out.println("\t\t\t\t 6  Cancel a booking");
-            System.out.println("\t\t\t\t 7  Checkout a table");
+            System.out.println("\t\t\t\t 7  Checkout a Seat");
             System.out.println("\t\t\t\t 8  Logout");
             System.out.println("\t\t\t\t 9  Exit SHIKUMEN Management System");
             System.out.print("Enter your choice: ");
@@ -206,7 +206,6 @@ public class SKMView {
                     boolean reSelect = true;
                     while(reSelect) {
                         IOUtils.printFormattedTitle("SHIKUMEN seats cancelling");
-                        System.out.print("Please enter the seat you want to cancel booking (-1 to exit): ");
                         int seatNum = handler.seatSelection();
                         System.out.println();
                         if (seatNum == -1) break;
@@ -221,7 +220,7 @@ public class SKMView {
                             IOUtils.printFormattedInfo("Cancelling succeeded!");
                         }
                         else {
-                            System.out.println("Sorry this table has not been booked yet");
+                            System.out.println("Sorry this table has not been booked or currently in use");
                             IOUtils.printFormattedInfo("Cancelling failed!");
                         }
                         System.out.println();
@@ -230,6 +229,18 @@ public class SKMView {
 
                 }
                 case 7:{
+                    IOUtils.printFormattedTitle("SHIKUMEN Seat Checkout");
+                    int seatID = handler.seatSelection();
+                    System.out.println("Please confirm that the customer wants to have the bill");
+                    if(IOUtils.readConfirmSelection()=='N') break;
+                    //ask to choose the payment type
+                    String paymentType = handler.paymentSelect();
+                    if(paymentType==null) break;
+                    //start the database handling
+                    if(handler.billPayment(seatID,paymentType)){
+                        IOUtils.printFormattedInfo("Checkout Successful!!  Have a nice day!");
+                    }
+                    System.out.println();
                     break;
 
                 }

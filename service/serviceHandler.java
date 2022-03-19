@@ -100,7 +100,7 @@ public class ServiceHandler {
         SeatDao seatDao = new SeatDao();
         Seat targetSeat = seatDao.checkSeat(seatID);
         String status = targetSeat.getStatus();
-        if(status.equals("Booked")||status.equals("Dining")){
+        if(status.equals("Booked")){
             return true;
         }
         else return false;
@@ -322,43 +322,110 @@ public class ServiceHandler {
         return dishesDao.searchPrice(dishID);
     }
 
+    public CompleteBill billGenerator(int seatID){
+        BillDao billDao = new BillDao();
+        List<Bill> bills = billDao.searchBill(seatID);
+        if(bills.size()==0){
+            IOUtils.printFormattedInfo("No bills associated with SeatID: "+seatID);
+            return null;
+        }
+        double billPrice = 0;
+        int numBills = 0;
+
+        //printout the titles
+        System.out.println(String.format("%-20s", "Amount") +
+                "\t\t"+String.format("%-30s", "Dish Name")+
+                "\t\t"+String.format("%-20s", "Price"));
+        String splitLine = "-----------------------------------------------------------------------------------------";
+        System.out.println(splitLine);
+        for(Bill bill:bills){
+            System.out.println(bill);
+            billPrice += bill.price;
+            numBills++;
+        }
+        return new CompleteBill(billPrice,numBills);
+    }
+
     /**
      * Function: display the for the nominated ID
      * @return boolean represents whether a boolean exists
      */
 
-    public void billDisplay(int seatID){
-        //initialize the BillDao
-        BillDao billDao = new BillDao();
-        List<Bill> bills = billDao.searchBill(seatID);
-        if(bills.size()==0){
-            IOUtils.printFormattedInfo("No bills associated with SeatID: "+seatID);
-            return;
-        }
-        double billPrice = 0;
+    public CompleteBill billDisplay(int seatID){
         String splitLine = "-----------------------------------------------------------------------------------------";
-        System.out.println(String.format("%-20s", "Amount") +
-                "\t\t"+String.format("%-30s", "Dish Name")+
-                "\t\t"+String.format("%-20s", "Price"));
+
+        //Using the billGenerator
+        CompleteBill billInfo = billGenerator(seatID);
+        //if bill is not available return
+        if(billInfo==null) return null;
 
         System.out.println(splitLine);
-        for(Bill bill:bills){
-            billPrice += bill.price;
-            System.out.println(bill);
-        }
-        double tips = billPrice*0.2;
-        double hst = (billPrice+tips)*0.13;
+        System.out.println();
+        System.out.println(String.format("%-50s"," ")+ String.format("%-14s","TIPS:")  + String.format("%.2f",billInfo.getTip()));
+        System.out.println(String.format("%-50s", " ") + String.format("%-14s","HST:") + String.format("%.2f",billInfo.getHst()));
         System.out.println(splitLine);
-        System.out.println();
-        System.out.println(String.format("%-50s"," ")+ String.format("%-15s","TIPS:")  + String.format("%.2f",tips));
-        System.out.println(String.format("%-50s", " ") + String.format("%-15s","HST:") + String.format("%.2f",hst));
-        System.out.println(splitLine);
-        System.out.println(String.format("%-50s", " ")+ String.format("%-15s","TOTAL:") +String.format("%.2f",billPrice+tips+hst));
+        System.out.println(String.format("%-50s", " ")+ String.format("%-14s","TOTAL:") +String.format("%.2f",billInfo.getTotalAmount()));
         System.out.println();
         System.out.println();
+        return billInfo;
     }
 
+    /**
+     * Function: get the total amount of bill and also update the bill status
+     * @param seatID seat number selected
+     * @param paymentMethod The payment type will be record into the income table
+     * @return a boolean show if the payment is successful
+     */
 
+    public boolean billPayment(int seatID,String paymentMethod){
+        CompleteBill billInfo = billDisplay(seatID);
+        if(billInfo==null) return false;
+        //Then update the bill status as check out
+        BillDao billDao = new BillDao();
 
+        //update the seat
+        SeatDao seatDao = new SeatDao();
+        //check if the seatID and the bill is updated properly
+        if(seatDao.checkoutSeat(seatID)!=1 || billDao.payBill(seatID)!= billInfo.getNumberOfBills()){
+            IOUtils.printFormattedInfo("Seat status update failed, please try again");
+            System.out.println();
+            return false;
+        }
+        //update the restaurant income
+        if(billDao.insertIncome(billInfo.getTotalAmount(),paymentMethod)!=1){
+            IOUtils.printFormattedInfo("Income status update failed, please try again");
+            System.out.println();
+            return false;
+        }
+        return true;
 
+    }
+
+    /**
+     * Function: helper in the paymentSelect
+     * @return a String contains the payment method
+     */
+
+    public String paymentSelect(){
+        boolean reSelect = true;
+        int option =0;
+        while(reSelect){
+            IOUtils.printFormattedInfo("Please select your payment method (-1 to exit): ");
+            System.out.println("1:\t\tDebit Card");
+            System.out.println("2:\t\tCredit Card");
+            System.out.print("Enter your choice: ");
+            option = IOUtils.readInt();
+            System.out.println();
+            if(option!=1 && option!=2 && option!=-1){
+                System.out.println("Your answer is not valid please try again...");
+                System.out.println();
+            }
+            else{
+                reSelect = false;
+            }
+        }
+        if(option==1) return "Debit Card";
+        else if(option==2) return "Credit Card";
+        else return null;
+    }
 }

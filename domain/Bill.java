@@ -47,7 +47,7 @@ public class Bill {
     public String toString() {
         return  (String.format("%-20s", amount) +
                 "\t\t"+String.format("%-30s", dishName)+
-                "\t\t"+String.format("%-20s", price)
+                "\t\t"+String.format("%.2f", price)
         );
     }
 }

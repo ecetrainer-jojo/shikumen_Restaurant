@@ -66,6 +66,12 @@ public class SeatDao extends BasicDao<Seat>{
         return (String)itemSelect(nameSql,seatID);
     }
 
+    //function to check out a seat
+    public int checkoutSeat(int seatID){
+        String updateSql = "Update seat set `status`='Empty', diningTime = null, servant = '', customerName='' where seatID = ?";
+        return update(updateSql,seatID);
+    }
+
 
 
 }
